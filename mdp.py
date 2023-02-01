@@ -4,6 +4,7 @@ from gramListener import gramListener
 from gramParser import gramParser
 import sys
 
+test_liste = []
         
 class gramPrintListener(gramListener):
 
@@ -17,10 +18,12 @@ class gramPrintListener(gramListener):
         print("Actions: %s" % str([str(x) for x in ctx.ID()]))
 
     def enterTransact(self, ctx):
+        global test_liste
         ids = [str(x) for x in ctx.ID()]
         dep = ids.pop(0)
         act = ids.pop(0)
         weights = [int(str(x)) for x in ctx.INT()]
+        test_liste.append([ids,dep,act,weights])
         print("Transition from " + dep + " with action "+ act + " and targets " + str(ids) + " with weights " + str(weights))
         
     def enterTransnoact(self, ctx):
@@ -39,6 +42,7 @@ def main():
     printer = gramPrintListener()
     walker = ParseTreeWalker()
     walker.walk(printer, tree)
+    print(test_liste)
 
 if __name__ == '__main__':
     main()
