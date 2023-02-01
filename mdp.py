@@ -42,3 +42,6 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+# commande python ./mdp.py < ./ex.mdp
