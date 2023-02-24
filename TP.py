@@ -157,7 +157,7 @@ class markov():
             if action not in self.actions:
                 print(f"Warning : l'action {action} est utilisée mais n'est pas déclarée")
 
-    def parcours(self,N, without_action = False, positionnel = False): # on parcours la chaine (en faisant N étapes)
+    def parcours(self,N, without_action = False, positionnel = False, file_name="visu_parcours"): # on parcours la chaine (en faisant N étapes)
         """ 
         On parcours la chaine en faisant N étapes
         
@@ -172,6 +172,9 @@ class markov():
         """
         etat_initial = self.liste_states[0] #état initial : premier élément
         etat_actif = self.states[etat_initial] # on prend l'objet correspondant à l'état initial
+        
+        self.afficher(etat = etat_initial, file_name='image0')
+        images = []
 
         if without_action:
             for i in range(N):
@@ -187,6 +190,8 @@ class markov():
                     if choix <= poids[j]:
                         etat_actif = self.states[etat_actif.transitions_without_action["targets"][j]]
                         break
+                self.afficher(etat = etat_actif.state, file_name=f'image{i+1}')
+                images.append(imageio.imread('image'+str(i+1)+'.png'))
 
         elif positionnel == True : # adversaire positionnel
             print("Choix d'un adversaire positionnel")
@@ -230,113 +235,121 @@ class markov():
                         if choix <= poids[j]:
                             etat_actif = self.states[etat_actif.transitions_with_action[action_choisie]["targets"][j]]
                             break
+                self.afficher(etat = etat_actif.state, file_name=f'image{i+1}')
+                images.append(imageio.imread('image'+str(i+1)+'.png'))
+        imageio.mimsave(file_name+'.gif', images,fps=3)
+        for i in range(N+1):
+            os.remove('image'+str(i)+'.png')
+            
+
+                        
+    def afficher(self, etat = "default", file_name="graph"):
+        
+        """Fonction qui permet de représenter le graphe de la chaine de Markov avec ou sans action. Dans le mode "default", le graphe de base est affiché.
+        Dans le mode "etat", on peut choisir un état et il sera mis en évidence en étant de couleur bleue.
+         """
+    
+        # On récupère les données
+        States = self.states
+        Actions = self.actions
+        Transitions_with_action = self.transitions_with_action
+        Transitions_without_action = self.transitions_without_action
+
+        # On crée le graphique
+        G = gv.Digraph(format='png')
+
+        if etat == "default":
+            for state in States:
+                G.node(state)
+        else:
+            for state in States:
+                if state == etat:
+                    G.node(state, color = 'blue', style = 'filled')
+                else:
+                    G.node(state)
+        
+        #On ajoute les actions
+        for actions in Actions:
+            G.node(actions, shape = 'point')
+            
+        for transition in Transitions_with_action:
+            G.edge(Transitions_with_action[transition]['from'], Transitions_with_action[transition]['action'], label=str(Transitions_with_action[transition]['action']), color = 'red')
+        
+
+        # On ajoute les transitions sans action
+        for transition in Transitions_without_action:
+            for i in range(len(Transitions_without_action[transition]['targets'])):
+                G.edge(Transitions_without_action[transition]['from'],Transitions_without_action[transition]['targets'][i], label = str(Transitions_without_action[transition]['weights'][i])) 
+
+        # On ajoute les transitions avec action
+        for transition in Transitions_with_action:
+            for i in range(len(Transitions_with_action[transition]['targets'])):
+                G.edge(Transitions_with_action[transition]['action'],Transitions_with_action[transition]['targets'][i], label = str(Transitions_with_action[transition]['weights'][i]))
+        
+        G.render(file_name, view=True)
+    
+    def simulation(self, n_iter, initial_state= "S0", mode_adv = "random" ):
+        """ Fonction qui permet de simuler une chaine de Markov avec ou sans action. On peut choisir le nombre d'itération, l'état initial et le mode de l'adversaire.
+        Pour l'instant, seul le mode "random" est disponible."""
+        
+        current_state = initial_state
+        States = self.states
+        Actions = self.actions
+        Transitions_with_action = self.transitions_with_action
+        Transitions_without_action = self.transitions_without_action
+        self.afficher(etat = current_state, file_name='image0')
+        images = []
+        if mode_adv == "random":
+            for i in range(n_iter):
+                    actions_possibles = []
+                    for transitions in Transitions_with_action:
+                        if Transitions_with_action[transitions]['from'] == current_state:
+                            actions_possibles.append(Transitions_with_action[transitions]['action'])
+                    if len(actions_possibles) == 0:
+                        for transitions in Transitions_without_action:
+                            if Transitions_without_action[transitions]['from'] == current_state:
+                                poids = Transitions_without_action[transitions]['weights']
+                                poids_total = np.sum(poids)
+                                poids = poids/poids_total
+                                poids = np.cumsum(poids)
+                                choix = random.random()
+                                for j in range(len(poids)):
+                                    if choix <= poids[j]:
+                                        current_state = Transitions_without_action[transitions]['targets'][j]
+                                        break
+                    else:
+                        action_choisie = random.choice(actions_possibles)
+                        for transitions in Transitions_with_action:
+                            if Transitions_with_action[transitions]['action'] == action_choisie:
+                                poids = Transitions_with_action[transitions]['weights']
+                                poids_total = np.sum(poids)
+                                poids = poids/poids_total
+                                poids = np.cumsum(poids)
+                                choix = random.random()
+                                for j in range(len(poids)):
+                                    if choix <= poids[j]:
+                                        current_state = Transitions_with_action[transitions]['targets'][j]
+                                        break
+                                    
+                    self.afficher(etat = current_state, file_name='image'+str(i+1))
+                    images.append(imageio.imread('image'+str(i+1)+'.png'))
+        imageio.mimsave('simulation.gif', images,fps=3)
+        for i in range(n_iter+1):
+            os.remove('image'+str(i)+'.png')
+        return current_state
+
+    
 
 
 
     def __repr__(self):
-        return (f"States : {self.states} \n Actions : {self.actions}")
-    
+        return (f"States : {self.states} \n Actions : {self.actions}")    
 
-import graphviz as gv
-def afficher(L, etat = "default"):
-    """Fonction qui permet de représenter le graphe de la chaine de Markov avec ou sans action. Dans le mode "default", le graphe de base est affiché.
-    Dans le mode "etat", on peut choisir un état et il sera mis en évidence en étant de couleur bleue.
-    """
-    # On récupère les données
-    States = L['States']
-    Actions = L['Actions']
-    Transitions_with_action = L['Transitions_with_action']
-    Transitions_without_action = L['Transitions_without_action']
-
-    # On crée le graphique
-    G = gv.Digraph(format='png')
-
-    if etat == "default":
-        for state in States:
-            G.node(state)
-    else:
-        for state in States:
-            if state == etat:
-                G.node(state, color = 'blue', style = 'filled')
-            else:
-                G.node(state)
-    
-    #On ajoute les actions
-    for actions in Actions:
-        G.node(actions, shape = 'point')
-        
-    for transition in Transitions_with_action:
-        G.edge(Transitions_with_action[transition]['from'], Transitions_with_action[transition]['action'], label=str(Transitions_with_action[transition]['action']), color = 'red')
-    
-
-    # On ajoute les transitions sans action
-    for transition in Transitions_without_action:
-        for i in range(len(Transitions_without_action[transition]['targets'])):
-            G.edge(Transitions_without_action[transition]['from'],Transitions_without_action[transition]['targets'][i], label = str(Transitions_without_action[transition]['weights'][i])) 
-
-    # On ajoute les transitions avec action
-    for transition in Transitions_with_action:
-        for i in range(len(Transitions_with_action[transition]['targets'])):
-            G.edge(Transitions_with_action[transition]['action'],Transitions_with_action[transition]['targets'][i], label = str(Transitions_with_action[transition]['weights'][i]))
-    
-    return G
 
 import numpy as np
 import imageio
 import os
-
-def simulation(L, n_iter, initial_state= "S0", mode_adv = "random" ):
-    """ Fonction qui permet de simuler une chaine de Markov avec ou sans action. On peut choisir le nombre d'itération, l'état initial et le mode de l'adversaire.
-    Pour l'instant, seul le mode "random" est disponible."""
-    current_state = initial_state
-    States = L['States']
-    Actions = L['Actions']
-    Transitions_with_action = L['Transitions_with_action']
-    Transitions_without_action = L['Transitions_without_action']
-    G = afficher(L, etat = current_state)
-    G.render('image0')
-    images = []
-    if mode_adv == "random":
-        for i in range(n_iter):
-                actions_possibles = []
-                for transitions in Transitions_with_action:
-                    if Transitions_with_action[transitions]['from'] == current_state:
-                        actions_possibles.append(Transitions_with_action[transitions]['action'])
-                if len(actions_possibles) == 0:
-                    for transitions in Transitions_without_action:
-                        if Transitions_without_action[transitions]['from'] == current_state:
-                            poids = Transitions_without_action[transitions]['weights']
-                            poids_total = np.sum(poids)
-                            poids = poids/poids_total
-                            poids = np.cumsum(poids)
-                            choix = random.random()
-                            for j in range(len(poids)):
-                                if choix <= poids[j]:
-                                    current_state = Transitions_without_action[transitions]['targets'][j]
-                                    break
-                else:
-                    action_choisie = random.choice(actions_possibles)
-                    for transitions in Transitions_with_action:
-                        if Transitions_with_action[transitions]['action'] == action_choisie:
-                            poids = Transitions_with_action[transitions]['weights']
-                            poids_total = np.sum(poids)
-                            poids = poids/poids_total
-                            poids = np.cumsum(poids)
-                            choix = random.random()
-                            for j in range(len(poids)):
-                                if choix <= poids[j]:
-                                    current_state = Transitions_with_action[transitions]['targets'][j]
-                                    break
-                                
-                G = afficher(L, etat = current_state)
-                G.render('image'+str(i+1))
-                images.append(imageio.imread('image'+str(i+1)+'.png'))
-    imageio.mimsave('simulation.gif', images,fps=3)
-    for i in range(n_iter):
-        os.remove('image'+str(i)+'.png')
-    return current_state
-    
-
+  
 if __name__ == "__main__":
     # States(L['States'][1], 0, L['Transitions_with_action'], L['Transitions_without_action'])
 
