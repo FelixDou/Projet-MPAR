@@ -1,0 +1,21 @@
+digraph {
+	S0
+	S1 [color=blue style=filled]
+	S2
+	a [shape=point]
+	b [shape=point]
+	c [shape=point]
+	d [shape=point]
+	S1 -> b [label=b color=red]
+	S1 -> a [label=a color=red]
+	S2 -> c [label=c color=red]
+	S0 -> S1 [label=5]
+	S0 -> S2 [label=5]
+	b -> S1 [label=2]
+	b -> S0 [label=8]
+	a -> S2 [label=1]
+	a -> S0 [label=3]
+	a -> S1 [label=6]
+	c -> S0 [label=5]
+	c -> S1 [label=5]
+}
