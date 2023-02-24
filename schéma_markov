@@ -1,6 +1,6 @@
 digraph {
 	S0
-	S1 [color=blue style=filled]
+	S1
 	S2
 	a [shape=point]
 	b [shape=point]
