@@ -1,7 +1,7 @@
 digraph {
-	S0
+	S0 [color=blue style=filled]
 	S1
-	S2 [color=blue style=filled]
+	S2
 	a [shape=point]
 	b [shape=point]
 	c [shape=point]
