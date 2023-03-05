@@ -1,0 +1,15 @@
+digraph {
+	S0 [color=blue style=filled]
+	S1
+	S2
+	S3
+	S4
+	None [shape=point]
+	S0 -> S1 [label=5]
+	S0 -> S2 [label=5]
+	S1 -> S0 [label=5]
+	S1 -> S3 [label=5]
+	S3 -> S3 [label=10]
+	S2 -> S4 [label=10]
+	S4 -> S1 [label=10]
+}
