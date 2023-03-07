@@ -2,8 +2,8 @@ digraph {
 	S0
 	S1
 	S2
-	S3
-	S4 [color=blue style=filled]
+	S3 [color=blue style=filled]
+	S4
 	None [shape=point]
 	S0 -> S1 [label=5]
 	S0 -> S2 [label=5]
