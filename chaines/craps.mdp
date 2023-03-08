@@ -1,8 +1,8 @@
-States start, 4/10, 5/9, 6/8, Won, Lost;
+States start, S410, S59, S68, Won, Lost;
 Actions None;
-start -> 6:4/10 + 8:5/6 + 10:6/8 + 8:Won + 4:Lost;
-4/10 -> 9:4/10 + 1:Won + 2:Lost;
-5/9 -> 13:5/9 + 2:Won + 3:Lost;
-6/8 -> 25:6/8 + 5:Won + 6:Lost;
+start -> 6:S410 + 8:S59 + 10:S68 + 8:Won + 4:Lost;
+S410 -> 9:S410 + 1:Won + 2:Lost;
+S59 -> 13:S59 + 2:Won + 3:Lost;
+S68 -> 25:S68 + 5:Won + 6:Lost;
 Won -> 1:Won;
 Lost -> 1:Lost;

@@ -1,0 +1,25 @@
+digraph {
+	start
+	S410
+	S59
+	S68
+	Won
+	Lost
+	None [shape=point]
+	start -> S410 [label=6]
+	start -> S59 [label=8]
+	start -> S68 [label=10]
+	start -> Won [label=8]
+	start -> Lost [label=4]
+	S410 -> S410 [label=9]
+	S410 -> Won [label=1]
+	S410 -> Lost [label=2]
+	S59 -> S59 [label=13]
+	S59 -> Won [label=2]
+	S59 -> Lost [label=3]
+	S68 -> S68 [label=25]
+	S68 -> Won [label=5]
+	S68 -> Lost [label=6]
+	Won -> Won [label=1]
+	Lost -> Lost [label=1]
+}
