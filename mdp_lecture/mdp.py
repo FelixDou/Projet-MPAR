@@ -6,7 +6,7 @@ import sys
 import pickle
 
 # On crée un dictionnaire pour stocker les informations du fichier mdp
-test_liste = {'States':[],'Actions':[],'Transitions_with_action':{},'Transitions_without_action':{}}
+test_liste = {'States':[],'Actions':[],'Transitions_with_action':{},'Transitions_without_action':{}, 'Rewards':{}}
 # la valeur de number_of_transitions est incrémentée à chaque transition afin de pouvoir créer des clés différentes pour chaque transition
 number_of_transitions = 0
         
@@ -15,11 +15,21 @@ class gramPrintListener(gramListener):
     def __init__(self):
         pass
         
-    def enterDefstates(self, ctx):
+    def enterStatenoreward(self, ctx):
         states = [str(x) for x in ctx.ID()]
         # On ajoute les états dans le dictionnaire
         test_liste["States"] = states
         print("States: %s" % states)
+
+    def enterStatereward(self, ctx):
+        states = [str(x) for x in ctx.ID()]
+        rewards = [int(str(x)) for x in ctx.INT()]
+        for states,rewards in zip(states,rewards):
+            # On ajoute les états et les récompenses dans le dictionnaire
+            test_liste["States"].append(states)
+            test_liste["Rewards"][states] =rewards
+        # On ajoute les états dans le dictionnaire
+        print("States: %s" % test_liste["States"])
 
     def enterDefactions(self, ctx):
         actions = [str(x) for x in ctx.ID()]

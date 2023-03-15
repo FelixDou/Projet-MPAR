@@ -1,4 +1,4 @@
-States S0, S1, S2, S3, S4;
+States S0:0, S1:5, S2:4, S3:20, S4:2;
 Actions None;
 S0 -> 5:S1 + 5:S2;
 S1 -> 5:S0 + 5:S3;

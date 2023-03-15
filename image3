@@ -1,9 +1,14 @@
 digraph {
 	S0
-	S1
+	0
+	S1 [color=blue style=filled]
+	5
 	S2
-	S3 [color=blue style=filled]
+	4
+	S3
+	20
 	S4
+	2
 	None [shape=point]
 	S0 -> S1 [label=5]
 	S0 -> S2 [label=5]
@@ -12,4 +17,9 @@ digraph {
 	S3 -> S3 [label=10]
 	S2 -> S4 [label=10]
 	S4 -> S1 [label=10]
+	0 -> 0 [label=10]
+	5 -> 5 [label=10]
+	4 -> 4 [label=10]
+	20 -> 20 [label=10]
+	2 -> 2 [label=10]
 }
