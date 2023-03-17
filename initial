@@ -8,7 +8,7 @@ digraph {
 	b [shape=point]
 	S0 -> a [label=a color=red]
 	S0 -> b [label=b color=red]
-	S1 -> S0 [label=10]
+	S1 -> S1 [label=10]
 	S3 -> S0 [label=10]
 	S2 -> S0 [label=10]
 	S4 -> S0 [label=10]
